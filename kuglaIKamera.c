@@ -5,6 +5,7 @@
 #define poluprecnikSfere 0.7
 
 Sfera kugla = {0, poluprecnikSfere, 0, poluprecnikSfere};
+double rotacijaKugle = 0;
 
 void nacrtajLoptu()
 {
@@ -23,6 +24,7 @@ void nacrtajLoptu()
     
     glPushMatrix();
         glTranslatef(kugla.x, kugla.y, kugla.z);
+        glRotatef(rotacijaKugle, 1, 0, 0);
         glutSolidSphere(kugla.r, 40, 40);
     glPopMatrix();
 }
@@ -33,15 +35,15 @@ void postaviKameru()
     //i ono u sta ona gleda nisu nikakve pametne formule samo nastelovano
     //da lepo izgleda
     double pocetnoY = 4*kugla.r + 2;
-    double pocetnoZ = 5*kugla.r + 3;
+    double pocetnoZ = -(5*kugla.r + 3);
     
     double pocetnoGledanjeY =  3*kugla.r;
-    double pocetnoGledanjeZ = -5*kugla.r;
+    double pocetnoGledanjeZ = 5*kugla.r;
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     //kamera ce se kretati po x i z osi sa kuglicom
-    gluLookAt(kugla.x, pocetnoY, pocetnoZ + kugla.z, 
-              kugla.x, pocetnoGledanjeY, pocetnoGledanjeZ + kugla.z, 
+    gluLookAt(kugla.x/2, pocetnoY, pocetnoZ + kugla.z, 
+              kugla.x/2, pocetnoGledanjeY, pocetnoGledanjeZ + kugla.z, 
               0, 1, 0);
 }

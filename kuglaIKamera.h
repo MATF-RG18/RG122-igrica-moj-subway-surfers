@@ -13,6 +13,7 @@ typedef struct sfera
 } Sfera;
 
 extern Sfera kugla;
+extern double rotacijaKugle;
 
 extern void nacrtajLoptu();
 extern void postaviKameru();

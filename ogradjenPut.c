@@ -35,7 +35,7 @@ static void nacrtajPut()
     glMaterialfv(GL_FRONT, GL_EMISSION, emisionoMaterijala);
     
     glPushMatrix();
-        glTranslatef(0, -debljinaPuta/2, -duzinaPuta/2);
+        glTranslatef(0, -debljinaPuta/2, duzinaPuta/2);
         glScalef(sirinaPuta, debljinaPuta, duzinaPuta);
         glutSolidCube(1);
     glPopMatrix();
@@ -58,14 +58,14 @@ static void nacrtajZidove()
     
     //desni zid
     glPushMatrix();
-        glTranslatef(debljinaZida/2 + sirinaPuta/2, visinaZida/2, -duzinaPuta/2);
+        glTranslatef(debljinaZida/2 + sirinaPuta/2, visinaZida/2, duzinaPuta/2);
         glScalef(debljinaZida, visinaZida, duzinaPuta);
         glutSolidCube(1);
     glPopMatrix();
     
     //levi zid
     glPushMatrix();
-        glTranslatef(-(debljinaZida/2 + sirinaPuta/2), visinaZida/2, -duzinaPuta/2);
+        glTranslatef(-(debljinaZida/2 + sirinaPuta/2), visinaZida/2, duzinaPuta/2);
         glScalef(debljinaZida, visinaZida, duzinaPuta);
         glutSolidCube(1);
     glPopMatrix();
