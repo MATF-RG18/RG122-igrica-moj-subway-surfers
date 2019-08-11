@@ -2,12 +2,12 @@
 
 #include "kuglaIKamera.h"
 
-#define poluprecnikSfere 0.7
+#define poluprecnikSfere 0.6
 
 Sfera kugla = {0, poluprecnikSfere, 0, poluprecnikSfere};
 double rotacijaKugle = 0;
 
-void nacrtajLoptu()
+void nacrtajLoptu(void)
 {
     //preuzeo sa neta neku boju
     GLfloat ambijentMaterijala[] = {0.105882, 0.058824, 0.113725, 1.0};
@@ -25,11 +25,11 @@ void nacrtajLoptu()
     glPushMatrix();
         glTranslatef(kugla.x, kugla.y, kugla.z);
         glRotatef(rotacijaKugle, 1, 0, 0);
-        glutSolidSphere(kugla.r, 40, 40);
+        glutSolidSphere(kugla.r, 23, 23);
     glPopMatrix();
 }
 
-void postaviKameru()
+void postaviKameru(void)
 {
     //ove cetiri double vrednosti predstavljaju pocetnu poziciju kamere
     //i ono u sta ona gleda nisu nikakve pametne formule samo nastelovano
@@ -43,7 +43,7 @@ void postaviKameru()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     //kamera ce se kretati po x i z osi sa kuglicom
-    gluLookAt(kugla.x/2, pocetnoY, pocetnoZ + kugla.z, 
-              kugla.x/2, pocetnoGledanjeY, pocetnoGledanjeZ + kugla.z, 
+    gluLookAt(kugla.x, pocetnoY, pocetnoZ + kugla.z, 
+              kugla.x, pocetnoGledanjeY, pocetnoGledanjeZ + kugla.z, 
               0, 1, 0);
 }

@@ -4,19 +4,15 @@
 //(x, y, z) - centar sfere
 typedef struct sfera 
 {
-    double x;
-    double y;
-    double z;
-    
+    double x, y, z;
     double r;
-    
 } Sfera;
 
 extern Sfera kugla;
 extern double rotacijaKugle;
 
-extern void nacrtajLoptu();
-extern void postaviKameru();
+extern void nacrtajLoptu(void);
+extern void postaviKameru(void);
 
 
 #endif

@@ -3,11 +3,11 @@
 
 extern const double sirinaPuta;
 extern const double debljinaPuta;
-extern const double duzinaPuta;
+extern const double duzinaPuta; //duzina puta je duzina i zida
 extern const double visinaZida;
 extern const double debljinaZida;
 
-extern void nacrtajOgradjenPut();
+extern void nacrtajOgradjenPut(void);
 
 
 #endif
