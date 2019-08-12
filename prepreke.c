@@ -7,12 +7,13 @@
 int brVrstaPrepreka = 9;
 Prepreka prvaPolovina[10];
 Prepreka drugaPolovina[10];
-int brPreprekaNaPrvojPolovini;
-int brPreprekaNaDrugojPolovini;
+int brPreprekaNaPrvojPolovini = 0;
+int brPreprekaNaDrugojPolovini = 0;
 
 static const int minRazmakIzmedjuPrepreka = 60;
 static const int maxRazmakIzmedjuPrepreka = 80;
-static int zPozicijaPravljenjaSledecePrepreke = 300/2 + 60; //FIXME duzinaPuta/2 + minRazmakIzmedjuPrepreka
+static int zPozicijaPravljenjaSledecePrepreke;
+static const double maxBrzinaKretanja = 0.2;
 
 static Prepreka napraviSledecuPrepreku(int zPozicijaPrepreke);
 
@@ -39,6 +40,14 @@ static int randomCelobrojnaVrednost(int n, int m) //[n, m]
 static double randomRealnaVrednost(double n, double m) //[n, m]
 {
     return n+(m-n)*((double) rand() / RAND_MAX);
+}
+static void kretanjePrepreke(Prepreka *p, int i);
+static int sudarDelaPreprekeSaZidom(DeoPrepreke pa);
+
+void inicijalizujPrepreke(void)
+{
+    brVrstaPrepreka = 9;
+    zPozicijaPravljenjaSledecePrepreke = duzinaPuta/2 + minRazmakIzmedjuPrepreka;
 }
 
 void nacrtajPrepreke(void)
@@ -169,30 +178,30 @@ static Prepreka napraviDvostrukuPlusPreskakajucuPrepreku(void)
 static Prepreka napraviPomerajucuObicnuPrepreku(void)
 {
     Prepreka x = napraviObicnuPrepreku();
-    //random brzina
+    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja, maxBrzinaKretanja);
     return x;
 }
 //7
 static Prepreka napraviPomerajucuObicnuPlusPreskakajucuPrepreku(void)
 {
     Prepreka x = napraviObicnuPlusPreskakajucuPrepreku();
-    //random brzina
+    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja, maxBrzinaKretanja);
     return x;
 }
 //8
 static Prepreka napraviPomerajucuDvostrukuPrepreku(void)
 {
     Prepreka x = napraviDvostrukuPrepreku();
-    //random brzina1
-    //random brzina2
+    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja, maxBrzinaKretanja);
+    x.b.brzinaKretanja = x.a.brzinaKretanja;
     return x;
 }
 //9
 static Prepreka napraviPomerajucuDvostrukuPlusPreskakajucuPrepreku(void)
 {
     Prepreka x = napraviDvostrukuPlusPreskakajucuPrepreku();
-    //random brzina1
-    //random brzina2
+    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja, maxBrzinaKretanja);
+    x.b.brzinaKretanja = x.a.brzinaKretanja;
     return x;
 }
 
@@ -274,5 +283,56 @@ static void nacrtajDeoPrepreke(DeoPrepreke dp)
         glutSolidCube(1);
     glPopMatrix();
 }
+
+void kretanjePomerajucihPrepreka(void)
+{
+    int i;
+    for(i=0; i<brPreprekaNaPrvojPolovini; i++)
+        kretanjePrepreke(prvaPolovina, i);
+    for(i=0; i<brPreprekaNaDrugojPolovini; i++)
+        kretanjePrepreke(drugaPolovina, i);
+}
+
+static void kretanjePrepreke(Prepreka *p, int i)
+{
+    switch(p[i].vrsta)
+    {
+        case PomerajucaObicna:
+            p[i].a.x += p[i].a.brzinaKretanja;
+            if(sudarDelaPreprekeSaZidom(p[i].a))
+                p[i].a.brzinaKretanja *= -1;
+            break;
+        case PomerajucaObicnaPlusPreskakajuca:
+            p[i].a.x += p[i].a.brzinaKretanja;
+            if(sudarDelaPreprekeSaZidom(p[i].a))
+                p[i].a.brzinaKretanja *= -1;
+            break;
+        case PomerajucaDvostruka:
+            p[i].a.x += p[i].a.brzinaKretanja;
+            p[i].b.x += p[i].b.brzinaKretanja;
+            if(sudarDelaPreprekeSaZidom(p[i].a))
+                p[i].a.brzinaKretanja *= -1;
+            if(sudarDelaPreprekeSaZidom(p[i].b))
+                p[i].b.brzinaKretanja *= -1;
+            break;
+        case PomerajucaDvostrukaPlusPreskakajuca:
+            p[i].a.x += p[i].a.brzinaKretanja;
+            p[i].b.x += p[i].b.brzinaKretanja;
+            
+            if(sudarDelaPreprekeSaZidom(p[i].a))
+                p[i].a.brzinaKretanja *= -1;
+            if(sudarDelaPreprekeSaZidom(p[i].b))
+                p[i].b.brzinaKretanja *= -1;
+            break;
+    }
+}
+
+static int sudarDelaPreprekeSaZidom(DeoPrepreke pa)
+{
+    if(pa.x-pa.sirina/2 > -sirinaPuta/2 && pa.x+pa.sirina/2 < sirinaPuta/2)
+        return 0;
+    else return 1;
+}
+
 
 

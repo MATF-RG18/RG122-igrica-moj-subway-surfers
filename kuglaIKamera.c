@@ -4,8 +4,8 @@
 
 #define poluprecnikSfere 0.6
 
-Sfera kugla = {0, poluprecnikSfere, 0, poluprecnikSfere};
-double rotacijaKugle = 0;
+Sfera kugla;
+double rotacijaKugle;
 
 void nacrtajLoptu(void)
 {
@@ -31,9 +31,8 @@ void nacrtajLoptu(void)
 
 void postaviKameru(void)
 {
-    //ove cetiri double vrednosti predstavljaju pocetnu poziciju kamere
-    //i ono u sta ona gleda nisu nikakve pametne formule samo nastelovano
-    //da lepo izgleda
+    //ove cetiri double vrednosti predstavljaju pocetnu poziciju kamerei ono u sta ona gleda. 
+    //Ovo nisu nikakve pametne formule samo nastelovano da lepo izgleda
     double pocetnoY = 4*kugla.r + 2;
     double pocetnoZ = -(5*kugla.r + 3);
     
@@ -46,4 +45,10 @@ void postaviKameru(void)
     gluLookAt(kugla.x, pocetnoY, pocetnoZ + kugla.z, 
               kugla.x, pocetnoGledanjeY, pocetnoGledanjeZ + kugla.z, 
               0, 1, 0);
+}
+
+void inicijalizujKuglu(void)
+{
+    kugla.x = 0, kugla.y = poluprecnikSfere, kugla.z = 0, kugla.r = poluprecnikSfere;
+    rotacijaKugle = 0;
 }

@@ -26,6 +26,8 @@ typedef struct deoPrepreke
 } DeoPrepreke;
 
 //prepreka se sastoji iz jedgog, dva ili tri dela prepreke
+//Ukoliko se sastoji iz recimo jednog dela onda b i c ne koristimo
+//a to iz koliko se delova sastoji znamo od vrste prepreke
 typedef struct prepreka
 {
     DeoPrepreke a;
@@ -45,5 +47,7 @@ extern int brPreprekaNaDrugojPolovini;
 extern void nacrtajPrepreke(void);
 extern void pomeriPrepreke(void);
 extern void napraviNovePrepreke(void);
+extern void kretanjePomerajucihPrepreka(void);
+extern void inicijalizujPrepreke(void);
 
 #endif
