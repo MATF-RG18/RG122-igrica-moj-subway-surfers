@@ -8,18 +8,20 @@
 #include "kuglaIKamera.h"
 #include "prepreke.h"
 
-static int pokrenutaAplikacija = 0;
-static int uSkoku = 0;
+static int pokrenutaAplikacija;
+static int uSkoku;
 static const int vremePozivaTajmera = 17;
 static const double pi = 3.141592;
-static double fi = 0;
+static double fi;
 static const double pocetnaBrzinaPadanjaPriSkoku = 0.07;
-static double brzinaPadanjaPriSkoku = 0.07;
-static double brzinaKuglice = 0.6;
-static double pomerajKugliceUStranu = 0.5;
-static double brzinaRotacijeKuglice = 20;
-static int indeksSledecePrepreke = 0;
-static int krajAplikacije = 0;
+static double brzinaPadanjaPriSkoku;
+static double brzinaKuglice;
+static const double pomerajKugliceUStranu = 0.5;
+static const double brzinaRotacijeKuglice = 20;
+static int indeksSledecePrepreke ;
+static int krajAplikacije;
+static int poeni;
+static int pomocniPoeni;
 
 static void inicijalizacijaGlut(int argc, char **argv);
 static void postaviSvetlo(void);
@@ -37,6 +39,10 @@ static int tackaSeNalaziUKvadru(double x, double y, double z, DeoPrepreke px);
 static int kuglaProslaPrepreku(void);
 static int sudarKugleSaZidom(void);
 static void inicijalizacijaAplikacije(void);
+static void postaviBodove(void);
+
+void pretvoriIntUString(int x, char *s);
+void obrniString(char *s, int n);
 
 void ispisiSledecuPrepreku(void); //TODO Dodato radi debagovanja treba izbrisati
 void ispisi(DeoPrepreke pa); //TODO Dodato radi debagovanja treba izbrisati
@@ -83,6 +89,8 @@ static void inicijalizacijaAplikacije(void)
     brzinaKuglice = 0.6;
     indeksSledecePrepreke = 0;
     krajAplikacije = 0;
+    poeni = 0;
+    pomocniPoeni = 0;
     
     srand(time(NULL));
     napraviNovePrepreke();
@@ -121,9 +129,13 @@ static void iscrtajNaEkran(void)
     postaviSvetlo();
 
     nacrtajOgradjenPut();
-    nacrtajLoptu();
     nacrtajPrepreke();
-    
+    if(krajAplikacije)
+        nacrtajLoptuKadSeSudarila();
+    else 
+        nacrtajLoptu();
+
+    postaviBodove();
     glutSwapBuffers();
 }
 
@@ -198,6 +210,13 @@ static void tajmer(int idTajmera)
     obradiSkok();
     kretanjePomerajucihPrepreka();
     
+    pomocniPoeni += vremePozivaTajmera*(2*brzinaKuglice); //sto se brze kugla krece brze se zaradjuju poeni
+    if(pomocniPoeni > 1000)
+    {
+        pomocniPoeni -= 1000;
+        poeni++;
+    }
+    
     if(sudarKugleSaPreprekom() || sudarKugleSaZidom())
         krajAplikacije = 1;
         
@@ -205,6 +224,7 @@ static void tajmer(int idTajmera)
         indeksSledecePrepreke++;
     
     printf("pomeraj: %lf\nfi: %lf\n", kugla.z, fi); //TODO Dodato radi debagovanja treba izbrisati
+    printf("%d\n", poeni); //TODO Dodato radi debagovanja treba izbrisati
     ispisiSledecuPrepreku(); //TODO Dodato radi debagovanja treba izbrisati
     
     glutPostRedisplay();
@@ -346,6 +366,58 @@ static int sudarKugleSaZidom(void)
         return 0;
     else
         return 1;
+}
+
+static void postaviBodove(void)
+{
+    glDisable(GL_LIGHTING);
+	glColor3f(1, 1, 1);
+ 
+    
+    char poeniString[20];
+    pretvoriIntUString(poeni, poeniString);
+    
+    int i;
+    glRasterPos3f(-(sirinaPuta/3 - kugla.x), visinaZida + 3, kugla.z + 5);
+    char s[] = "Score: ";
+    for(i = 0; s[i] != '\0'; i++)
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, s[i]);
+    for(i = 0; poeniString[i] != '\0'; i++)
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, poeniString[i]);
+    
+	glEnable(GL_LIGHTING);
+}
+
+void pretvoriIntUString(int x, char *s)
+{
+    if(x == 0)
+    {
+        s[0] = '0', s[1] = '\0';
+        return;
+    }
+    
+    int i;
+    for(i = 0; x != 0; i++)
+    {
+        s[i] = x%10 + '0';
+        x /= 10;
+    }
+    s[i] = '\0';
+    obrniString(s, i);
+    return;
+    
+}
+
+void obrniString(char *s, int n)
+{
+    int i, j;
+    char pom;
+    for(i=0, j=n-1; i<j; i++, j--)
+    {
+        pom = s[i];
+        s[i] = s[j];
+        s[j] = pom;
+    }
 }
 
 void ispisiSledecuPrepreku(void) //TODO Dodato radi debagovanja treba izbrisati

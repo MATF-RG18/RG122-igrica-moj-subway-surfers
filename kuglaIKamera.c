@@ -29,6 +29,27 @@ void nacrtajLoptu(void)
     glPopMatrix();
 }
 
+void nacrtajLoptuKadSeSudarila(void)
+{
+    GLfloat ambijentMaterijala[] = {0.0, 0.0, 0.0, 1.0};
+    GLfloat difuznoMaterijala[] = {1.0, 0.0, 0.0, 1.0};
+    GLfloat spekularnoMaterijala[] = {0.0225, 0.0225, 0.0225, 1.0};
+    GLfloat emisionoMaterijala[] = {0.0, 0.0, 0.0, 1.0};
+    GLfloat sajnes = 12.8;
+    
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambijentMaterijala);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, difuznoMaterijala);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, spekularnoMaterijala);
+    glMaterialf(GL_FRONT, GL_SHININESS, sajnes);
+    glMaterialfv(GL_FRONT, GL_EMISSION, emisionoMaterijala);
+    
+    glPushMatrix();
+        glTranslatef(kugla.x, kugla.y, kugla.z);
+        glRotatef(rotacijaKugle, 1, 0, 0);
+        glutSolidSphere(kugla.r, 23, 23);
+    glPopMatrix();
+}
+
 void postaviKameru(void)
 {
     //ove cetiri double vrednosti predstavljaju pocetnu poziciju kamerei ono u sta ona gleda. 

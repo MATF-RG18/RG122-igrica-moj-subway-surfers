@@ -178,30 +178,30 @@ static Prepreka napraviDvostrukuPlusPreskakajucuPrepreku(void)
 static Prepreka napraviPomerajucuObicnuPrepreku(void)
 {
     Prepreka x = napraviObicnuPrepreku();
-    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja, maxBrzinaKretanja);
+    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja,  maxBrzinaKretanja);
     return x;
 }
 //7
 static Prepreka napraviPomerajucuObicnuPlusPreskakajucuPrepreku(void)
 {
     Prepreka x = napraviObicnuPlusPreskakajucuPrepreku();
-    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja, maxBrzinaKretanja);
+    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja,  maxBrzinaKretanja);
     return x;
 }
 //8
 static Prepreka napraviPomerajucuDvostrukuPrepreku(void)
 {
     Prepreka x = napraviDvostrukuPrepreku();
-    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja, maxBrzinaKretanja);
-    x.b.brzinaKretanja = x.a.brzinaKretanja;
+    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja,  maxBrzinaKretanja);
+    x.b.brzinaKretanja = -x.a.brzinaKretanja;
     return x;
 }
 //9
 static Prepreka napraviPomerajucuDvostrukuPlusPreskakajucuPrepreku(void)
 {
     Prepreka x = napraviDvostrukuPlusPreskakajucuPrepreku();
-    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja, maxBrzinaKretanja);
-    x.b.brzinaKretanja = x.a.brzinaKretanja;
+    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja,  maxBrzinaKretanja);
+    x.b.brzinaKretanja = -x.a.brzinaKretanja;
     return x;
 }
 

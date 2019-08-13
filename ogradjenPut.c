@@ -38,7 +38,7 @@ static void nacrtajPut(void)
     
     glPushMatrix();
         glTranslatef(0, -debljinaPuta/2, duzinaPuta/2);
-        glScalef(sirinaPuta, debljinaPuta, duzinaPuta+4);//duzinaPuta+4 -> dodajemo 4 jer pri vracanju kamere i kugle u nazad da ne bi opet videli pocetak staze
+        glScalef(sirinaPuta, debljinaPuta, duzinaPuta+20);//duzinaPuta+20 -> dodajemo 20 jer pri vracanju kamere i kugle u nazad da ne bi opet videli pocetak staze
         glutSolidCube(1);
     glPopMatrix();
 }
@@ -61,14 +61,14 @@ static void nacrtajZidove(void)
     //desni zid
     glPushMatrix();
         glTranslatef(debljinaZida/2 + sirinaPuta/2, visinaZida/2, duzinaPuta/2);
-        glScalef(debljinaZida, visinaZida, duzinaPuta+4);
+        glScalef(debljinaZida, visinaZida, duzinaPuta+20);
         glutSolidCube(1);
     glPopMatrix();
     
     //levi zid
     glPushMatrix();
         glTranslatef(-(debljinaZida/2 + sirinaPuta/2), visinaZida/2, duzinaPuta/2);
-        glScalef(debljinaZida, visinaZida, duzinaPuta+4);
+        glScalef(debljinaZida, visinaZida, duzinaPuta+20);
         glutSolidCube(1);
     glPopMatrix();
 }

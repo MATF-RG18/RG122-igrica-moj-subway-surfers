@@ -14,6 +14,7 @@ extern double rotacijaKugle;
 extern void nacrtajLoptu(void);
 extern void postaviKameru(void);
 extern void inicijalizujKuglu(void);
+extern void nacrtajLoptuKadSeSudarila(void);
 
 
 #endif
