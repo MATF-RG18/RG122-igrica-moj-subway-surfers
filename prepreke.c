@@ -4,7 +4,7 @@
 #include "prepreke.h"
 #include "ogradjenPut.h"
 
-int brVrstaPrepreka = 9;
+int brVrstaPrepreka;
 Prepreka prvaPolovina[10];
 Prepreka drugaPolovina[10];
 int brPreprekaNaPrvojPolovini = 0;
@@ -14,6 +14,7 @@ static const int minRazmakIzmedjuPrepreka = 60;
 static const int maxRazmakIzmedjuPrepreka = 80;
 static int zPozicijaPravljenjaSledecePrepreke;
 static const double maxBrzinaKretanja = 0.2;
+static const double minBrzinaKretanja = 0.05;
 
 static Prepreka napraviSledecuPrepreku(int zPozicijaPrepreke);
 
@@ -178,21 +179,21 @@ static Prepreka napraviDvostrukuPlusPreskakajucuPrepreku(void)
 static Prepreka napraviPomerajucuObicnuPrepreku(void)
 {
     Prepreka x = napraviObicnuPrepreku();
-    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja,  maxBrzinaKretanja);
+    x.a.brzinaKretanja = randomRealnaVrednost(minBrzinaKretanja, maxBrzinaKretanja);
     return x;
 }
 //7
 static Prepreka napraviPomerajucuObicnuPlusPreskakajucuPrepreku(void)
 {
     Prepreka x = napraviObicnuPlusPreskakajucuPrepreku();
-    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja,  maxBrzinaKretanja);
+    x.a.brzinaKretanja = randomRealnaVrednost(minBrzinaKretanja, maxBrzinaKretanja);
     return x;
 }
 //8
 static Prepreka napraviPomerajucuDvostrukuPrepreku(void)
 {
     Prepreka x = napraviDvostrukuPrepreku();
-    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja,  maxBrzinaKretanja);
+    x.a.brzinaKretanja = randomRealnaVrednost(minBrzinaKretanja, maxBrzinaKretanja);
     x.b.brzinaKretanja = -x.a.brzinaKretanja;
     return x;
 }
@@ -200,7 +201,7 @@ static Prepreka napraviPomerajucuDvostrukuPrepreku(void)
 static Prepreka napraviPomerajucuDvostrukuPlusPreskakajucuPrepreku(void)
 {
     Prepreka x = napraviDvostrukuPlusPreskakajucuPrepreku();
-    x.a.brzinaKretanja = randomRealnaVrednost(-maxBrzinaKretanja,  maxBrzinaKretanja);
+    x.a.brzinaKretanja = randomRealnaVrednost(minBrzinaKretanja, maxBrzinaKretanja);
     x.b.brzinaKretanja = -x.a.brzinaKretanja;
     return x;
 }
@@ -211,7 +212,7 @@ static DeoPrepreke napraviDeoPreprekeObicna(double x, double y, double minVisina
     DeoPrepreke a;
     
     a.sirina = randomRealnaVrednost(2, (2.0/3)*(y-x)); //maksimalno 2/3 moze da zauzme onog dela na kom se pravi
-    a.visina = randomRealnaVrednost(minVisina, 5);
+    a.visina = randomCelobrojnaVrednost(minVisina, 5);
     a.x = randomRealnaVrednost(x + a.sirina/2, y - a.sirina/2);
     a.y = a.visina/2;
     

@@ -8,6 +8,30 @@
 #include "kuglaIKamera.h"
 #include "prepreke.h"
 
+//svakim nivoom brzina raste za 0.05 i do nivoa 9 raste broj prepreka koje se koriste
+//Nivoima su dodeljene vrednosti i kad broj poena dodje do njih dolazi se do tog nivoa
+enum nivo
+{
+    NIVO1 = 0,
+    NIVO2 = 70,
+    NIVO3 = 140,
+    NIVO4 = 210,
+    NIVO5 = 280,
+    NIVO6 = 350,
+    NIVO7 = 420,
+    NIVO8 = 490,
+    NIVO9 = 560,
+    NIVO10 = 630,
+    NIVO11 = 1000,
+    NIVO12 = 1200,
+    NIVO13 = 1400,
+    NIVO14 = 1600,
+    NIVO15 = 1800,
+    NIVO16 = 2000,
+    NIVO17 = 2200,
+    NIVO18 = 2400
+};
+
 static int pokrenutaAplikacija;
 static int uSkoku;
 static const int vremePozivaTajmera = 17;
@@ -16,12 +40,13 @@ static double fi;
 static const double pocetnaBrzinaPadanjaPriSkoku = 0.07;
 static double brzinaPadanjaPriSkoku;
 static double brzinaKuglice;
-static const double pomerajKugliceUStranu = 0.5;
-static const double brzinaRotacijeKuglice = 20;
+static const double pomerajKugliceUStranu = 0.45;
+static double brzinaRotacijeKuglice;
 static int indeksSledecePrepreke ;
 static int krajAplikacije;
 static int poeni;
 static int pomocniPoeni;
+static int skretanjeDesno, skretanjeLevo;
 
 static void inicijalizacijaGlut(int argc, char **argv);
 static void postaviSvetlo(void);
@@ -40,9 +65,12 @@ static int kuglaProslaPrepreku(void);
 static int sudarKugleSaZidom(void);
 static void inicijalizacijaAplikacije(void);
 static void postaviBodove(void);
+static void otpustenSpecijalniTaster(int k, int x, int y);
 
-void pretvoriIntUString(int x, char *s);
-void obrniString(char *s, int n);
+static void pretvoriIntUString(int x, char *s);
+static void obrniString(char *s, int n);
+
+static void obradiNivo(void);
 
 void ispisiSledecuPrepreku(void); //TODO Dodato radi debagovanja treba izbrisati
 void ispisi(DeoPrepreke pa); //TODO Dodato radi debagovanja treba izbrisati
@@ -70,6 +98,7 @@ static void inicijalizacijaGlut(int argc, char **argv)
     glutSpecialFunc(tastaturaSpecijalniTasteri);
     glutReshapeFunc(promenaVelicineProzora);
     glutDisplayFunc(iscrtajNaEkran);
+    glutSpecialUpFunc(otpustenSpecijalniTaster);
     
     glClearColor((double)135/255, (double)206/255, (double)235/255, 0); //preuzeo sa neta boju neba
     
@@ -91,6 +120,9 @@ static void inicijalizacijaAplikacije(void)
     krajAplikacije = 0;
     poeni = 0;
     pomocniPoeni = 0;
+    skretanjeDesno = 0, skretanjeLevo = 0;
+    brVrstaPrepreka = 1;
+    brzinaRotacijeKuglice = 20;
     
     srand(time(NULL));
     napraviNovePrepreke();
@@ -178,26 +210,26 @@ static void tastaturaSpecijalniTasteri(int pritisnutSpecijalniKarakter, int x, i
         switch(pritisnutSpecijalniKarakter)
         {
             case GLUT_KEY_LEFT:
-                kugla.x += pomerajKugliceUStranu;
-                break;
+                skretanjeLevo = 1;
+            break;
             
             case GLUT_KEY_RIGHT:
-                kugla.x += -pomerajKugliceUStranu;
-                break;
+                skretanjeDesno = 1;
+            break;
                 
             case GLUT_KEY_UP:
                 if(!uSkoku)
                 {
                     uSkoku = 1;
                 }
-                break;
+            break;
             
             //Omogucava kad smo u skoku da brze padnemo na zemlju
             case GLUT_KEY_DOWN:
-            if(uSkoku)
-            {                
-                brzinaPadanjaPriSkoku += pocetnaBrzinaPadanjaPriSkoku;
-            }
+                if(uSkoku)
+                {                
+                    brzinaPadanjaPriSkoku += pocetnaBrzinaPadanjaPriSkoku;
+                }
             break;
         }
     }
@@ -209,6 +241,11 @@ static void tajmer(int idTajmera)
     rotirajKuglicu();
     obradiSkok();
     kretanjePomerajucihPrepreka();
+    
+    if(skretanjeLevo)
+        kugla.x += pomerajKugliceUStranu;
+    if(skretanjeDesno)
+        kugla.x -= pomerajKugliceUStranu;
     
     pomocniPoeni += vremePozivaTajmera*(2*brzinaKuglice); //sto se brze kugla krece brze se zaradjuju poeni
     if(pomocniPoeni > 1000)
@@ -223,9 +260,12 @@ static void tajmer(int idTajmera)
     if(kuglaProslaPrepreku())
         indeksSledecePrepreke++;
     
-    printf("pomeraj: %lf\nfi: %lf\n", kugla.z, fi); //TODO Dodato radi debagovanja treba izbrisati
+    /*printf("pomeraj: %lf\nfi: %lf\n", kugla.z, fi); //TODO Dodato radi debagovanja treba izbrisati
     printf("%d\n", poeni); //TODO Dodato radi debagovanja treba izbrisati
-    ispisiSledecuPrepreku(); //TODO Dodato radi debagovanja treba izbrisati
+    printf("brzinaKuglice: %lf\n", brzinaKuglice);
+    ispisiSledecuPrepreku(); //TODO Dodato radi debagovanja treba izbrisati*/
+    
+    obradiNivo();
     
     glutPostRedisplay();
     if(pokrenutaAplikacija && !krajAplikacije)
@@ -388,7 +428,7 @@ static void postaviBodove(void)
 	glEnable(GL_LIGHTING);
 }
 
-void pretvoriIntUString(int x, char *s)
+static void pretvoriIntUString(int x, char *s)
 {
     if(x == 0)
     {
@@ -408,7 +448,7 @@ void pretvoriIntUString(int x, char *s)
     
 }
 
-void obrniString(char *s, int n)
+static void obrniString(char *s, int n)
 {
     int i, j;
     char pom;
@@ -417,6 +457,20 @@ void obrniString(char *s, int n)
         pom = s[i];
         s[i] = s[j];
         s[j] = pom;
+    }
+}
+
+static void otpustenSpecijalniTaster(int k, int x, int y)
+{
+    switch(k)
+    {
+        case GLUT_KEY_LEFT:
+            skretanjeLevo = 0;
+            break;
+            
+        case GLUT_KEY_RIGHT:
+            skretanjeDesno = 0;
+            break;
     }
 }
 
@@ -482,4 +536,101 @@ void ispisi(DeoPrepreke pa) //TODO Dodato radi debagovanja treba izbrisati
 {
     printf("Centar: %lf, %lf %lf\n", pa.x, pa.y, pa.z);
     printf("brzinaKretanja: %lf\n", pa.brzinaKretanja);
+    printf("sirina: %lf\n", pa.sirina);
+}
+
+static void obradiNivo(void)
+{
+    if(poeni >= NIVO18)
+    {
+        brzinaKuglice = 0.6 + 18*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO17)
+    {
+        brzinaKuglice = 0.6 + 17*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO16)
+    {
+        brzinaKuglice = 0.6 + 16*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO15)
+    {
+        brzinaKuglice = 0.6 + 15*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO14)
+    {
+        brzinaKuglice = 0.6 + 14*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO13)
+    {
+        brzinaKuglice = 0.6 + 13*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO12)
+    {
+        brzinaKuglice = 0.6 + 12*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO11)
+    {
+        brzinaKuglice = 0.6 + 11*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO10)
+    {
+        brzinaKuglice = 0.6 + 10*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO9)
+    {
+        brzinaKuglice = 0.6 + 9*0.05;
+        brVrstaPrepreka = 9;
+    }
+    else if(poeni >= NIVO8)
+    {
+        brzinaKuglice = 0.6 + 8*0.05;
+        brVrstaPrepreka = 8;
+    }
+    else if(poeni >= NIVO7)
+    {
+        brzinaKuglice = 0.6 + 7*0.05;
+        brVrstaPrepreka = 7;
+    }
+    else if(poeni >= NIVO6)
+    {
+        brzinaKuglice = 0.6 + 6*0.05;
+        brVrstaPrepreka = 6;
+    }
+    else if(poeni >= NIVO5)
+    {
+        brzinaKuglice = 0.6 + 5*0.05;
+        brVrstaPrepreka = 5;
+    }
+    else if(poeni >= NIVO4)
+    {
+        brzinaKuglice = 0.6 + 4*0.05;
+        brVrstaPrepreka = 4;
+    }
+    else if(poeni >= NIVO3)
+    {
+        brzinaKuglice = 0.6 + 3*0.05;
+        brVrstaPrepreka = 3;
+    }
+    else if(poeni >= NIVO2)
+    {
+        brzinaKuglice = 0.6 + 2*0.05;
+        brVrstaPrepreka = 2;
+    }
+    else if(poeni >= NIVO1)
+    {
+        brzinaKuglice = 0.6 + 1*0.05;
+        brVrstaPrepreka = 1;
+    }
+    
+    brzinaRotacijeKuglice = 34 * brzinaKuglice;
 }
